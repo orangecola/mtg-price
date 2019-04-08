@@ -3,24 +3,7 @@ from tcgplayer import tcgplayer
 import json
 import traceback
 
-
-def main_handler(event, context):
-
-	searchTerm = event['queryStringParameters']['querystring']
-	'''
-	try:
-		TCGresult = tcgplayer(searchTerm)
-	except: 
-		traceback.print_exc()
-		TCGresult = 0
-	'''
-	try:
-		BIGresult = bigweb(searchTerm)
-	except:
-		traceback.print_exc()
-		BIGresult = 0
-	
-	#final = {"tcgplayer":TCGresult, "bigweb":BIGresult}
+def formatOutput(output):
 	return {
         "statusCode": 200,
         "headers": {
@@ -28,6 +11,28 @@ def main_handler(event, context):
 		    "Access-Control-Allow-Headers": "Content-Type",
 		    "Access-Control-Allow-Methods": "OPTIONS,GET"
 		  },
-        "body": json.dumps(BIGresult)
+        "body": json.dumps(output)
     }
-	
+
+def tcg_handler(event, context):
+
+	searchTerm = event['queryStringParameters']['querystring']
+
+	try:
+		TCGresult = tcgplayer(searchTerm)
+	except:
+		traceback.print_exc()
+		TCGresult = 0
+
+	return formatOutput(TCGresult)
+
+def big_handler(event, context):
+	searchTerm = event['queryStringParameters']['querystring']
+
+	try:
+		BIGresult = bigweb(searchTerm)
+	except:
+		traceback.print_exc()
+		BIGresult = 0
+
+	return formatOutput(BIGresult)

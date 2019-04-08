@@ -27,14 +27,14 @@ def is_good_response(resp):
     Returns True if the response seems to be HTML, False otherwise.
     """
     content_type = resp.headers['Content-Type'].lower()
-    return (resp.status_code == 200 
-            and content_type is not None 
+    return (resp.status_code == 200
+            and content_type is not None
             and content_type.find('html') > -1)
 
 
 def log_error(e):
     """
-    It is always a good idea to log errors. 
+    It is always a good idea to log errors.
     This function just prints them, but you can
     make it do anything.
     """
@@ -42,7 +42,7 @@ def log_error(e):
 
 def bigweb(searchTerm):
 	jsonoutput = []
-	f = '{0}:\t{1}'	
+	f = '{0}:\t{1}'
 
 	#print('https://mtg.bigweb.co.jp')
 
@@ -54,6 +54,8 @@ def bigweb(searchTerm):
 	setName = ""
 	for i in range(0, len(children)):
 		if 'item' in children[i]['class']:
+			condition = ""
+			price = ""
 			#Display Card Name
 			try:
 				parsed_json = json.loads(children[i].findChildren(recursive=False)[0]['data-obj'])
@@ -71,14 +73,16 @@ def bigweb(searchTerm):
 				continue
 			pricelist = pricelist[:-1]
 			for i in pricelist:
-				condition = i.findChildren(recursive=False)[0].findChildren(recursive=False)[0].text 
-				price = i.findChildren(recursive=False)[0].findChildren(recursive=False)[1].text
+				cardCondition = i.findChildren(recursive=False)[0].findChildren(recursive=False)[0].text
+				cardPrice = i.findChildren(recursive=False)[0].findChildren(recursive=False)[1].text
 				print(f.format(condition, price))
-				jsonoutput.append([cardName, setName, condition, price])
+				condition = cardCondition if len(condition) == 0 else condition + "<br />" + cardCondition
+				price = cardPrice if len(price) == 0 else price + "<br />" + cardPrice
+			jsonoutput.append([cardName, setName, condition, price])
 		else:
 			#Display Set Name
 			setName = children[i].findChildren()[0].findChildren()[1].findChildren()[0].text
 			print (setName)
 
-	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])		
+	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
 	return jsonoutput
