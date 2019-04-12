@@ -52,6 +52,7 @@ def bigweb(searchTerm):
 	children = root.findChildren(recursive=False)
 
 	setName = ""
+	setCode = ""
 	for i in range(0, len(children)):
 		if 'item' in children[i]['class']:
 			condition = ""
@@ -59,16 +60,18 @@ def bigweb(searchTerm):
 			#Display Card Name
 			try:
 				parsed_json = json.loads(children[i].findChildren(recursive=False)[0]['data-obj'])
-				cardName = parsed_json['name']
+				cardName = parsed_json['name'].replace(u'\u00b4', '\'')
 			except:
-				cardName = children[i].findChildren()[0].findChildren()[0].text
+				cardName = children[i].findChildren()[0].findChildren()[0].text.replace('\\u00b4', '\'')
+				print(cardName)
+				continue
 			print(cardName)
 			try:
 				#Display Card Prices
 				pricelist = children[i].findChildren(recursive=False)[0].findChildren(recursive=False)[3].findChildren(recursive=False)[2].findChildren(recursive=False)[0].findChildren(recursive=False)
 			except:
 				#Sold Out
-				jsonoutput.append([cardName, setName, 'Sold out', '0円'])
+				jsonoutput.append([cardName, setName, 'Sold out', '0円', setCode])
 				print(f.format('Sold out', '0円'))
 				continue
 			pricelist = pricelist[:-1]
@@ -78,11 +81,13 @@ def bigweb(searchTerm):
 				print(f.format(condition, price))
 				condition = cardCondition if len(condition) == 0 else condition + "<br />" + cardCondition
 				price = cardPrice if len(price) == 0 else price + "<br />" + cardPrice
-			jsonoutput.append([cardName, setName, condition, price])
+			jsonoutput.append([cardName, setName, condition, price, setCode])
 		else:
 			#Display Set Name
 			setName = children[i].findChildren()[0].findChildren()[1].findChildren()[0].text
+			setCode = children[i].findChildren()[0].findChildren()[1].text.split(':')[0]
 			print (setName)
+			print (setCode)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
 	return jsonoutput

@@ -65,10 +65,11 @@ def tcgplayer(searchTerm):
 		for j in groups:
 			if j["groupId"] == i["groupId"]:
 				set = j["name"]
+				setCode = j["abbreviation"]
 		for j in prices:
 			if j["productId"] == i["productId"]:
 				if j["marketPrice"] != None:
 					condition = j["subTypeName"] if len(condition) == 0 else condition + "<br />" + j["subTypeName"]
 					price = str(j["marketPrice"]) if len(price) == 0 else price + "<br />" + str(j["marketPrice"])
-		output.append([name, set, condition, price])
+		output.append([name, set, condition, price, setCode])
 	return output
