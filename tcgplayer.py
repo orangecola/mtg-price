@@ -24,6 +24,12 @@ def tcgplayer(searchTerm):
             "values": [
                 searchTerm
             ]
+        },
+        {
+            "name": "Rarity",
+            "values": [
+                "M", "R", "U", "C", "L", "S"
+            ]
         }
     ]
     }
