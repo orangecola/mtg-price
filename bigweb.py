@@ -40,6 +40,14 @@ def log_error(e):
     """
     print(e)
 
+setParity = {
+    "pFNM":"FNM",
+    "MPS_AKH":"MPS2",
+    "MED_RNA":"MED2",
+    "pJGP":"JDG",
+    "pMPR":"MPRP",
+    "UBT","UMA:BT"
+}
 def bigweb(searchTerm):
 	jsonoutput = []
 	f = '{0}:\t{1}'
@@ -86,6 +94,8 @@ def bigweb(searchTerm):
 			#Display Set Name
 			setName = children[i].findChildren()[0].findChildren()[1].findChildren()[0].text
 			setCode = children[i].findChildren()[0].findChildren()[1].text.split(':')[0]
+			if setCode in setParity:
+				setCode = setParity[setCode]
 			print (setName)
 			print (setCode)
 
