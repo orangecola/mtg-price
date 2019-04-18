@@ -4,13 +4,13 @@ from contextlib import closing
 from bs4 import BeautifulSoup
 import sys, json, urllib
 import json
-
+import os
 
 
 def tcgplayer(searchTerm):
 
 	#Get API Token
-	parameters = {"grant_type": "client_credentials", "client_id":"C48024A2-0DCD-4202-B4D3-8CBA977D6CBE", "client_secret":"0F5E4E1C-F98E-4633-84AE-1A5BBE4B518B"}
+	parameters = {"grant_type": "client_credentials", "client_id":os.environ["client_id"], "client_secret":os.environ["client_secret"]}
 	response = get("https://api.tcgplayer.com/token", data=parameters)
 	token = json.loads(response.content)
 	authorization_header = {"Authorization": ("Bearer " + token["access_token"]), "Content-Type": "application/json"}

@@ -46,7 +46,7 @@ setParity = {
     "MED_RNA":"MED2",
     "pJGP":"JDG",
     "pMPR":"MPRP",
-    "UBT","UMA:BT"
+    "UBT":"UMA:BT"
 }
 def bigweb(searchTerm):
 	jsonoutput = []
