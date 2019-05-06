@@ -35,3 +35,15 @@ functions:
           method: get
           querystrings:
             querystring: true
+resources:
+  Outputs:
+    APIEndpoint:
+      Description: URL of the API Endpoint
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api.${opt:region, self:provider.region}.amazonaws.com/${opt:stage}"
+      Export:
+        Name: ${self:service}:${opt:stage}:APIEndpoint      
