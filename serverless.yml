@@ -36,14 +36,23 @@ functions:
           querystrings:
             querystring: true
 resources:
+  Resources:
+    ServiceEndpointParameter:
+      Type: AWS::SSM::Parameter 
+      Properties: 
+        Description: "URL of the service endpoint"
+        Name: ${self:service}_${opt:stage, self:provider.stage}_ServiceEndpoint  
+        Type: "String"
+        Value: 
+          Fn::Join:
+            - ""
+            - - "https://"
+              - Ref: ApiGatewayRestApi
+              - ".execute-api.${opt:region, self:provider.region}.amazonaws.com/${opt:stage, self:provider.stage}"
   Outputs:
-    APIEndpoint:
-      Description: URL of the API Endpoint
+    ParameterName:
+      Description: Name of the Service endpoint paramter
       Value:
-        Fn::Join:
-          - ""
-          - - "https://"
-            - Ref: ApiGatewayRestApi
-            - ".execute-api.${opt:region, self:provider.region}.amazonaws.com/${opt:stage}"
+        Ref: ServiceEndpointParameter
       Export:
-        Name: ${self:service}:${opt:stage}:APIEndpoint      
+        Name: ${self:service}-${opt:stage, self:provider.stage}-ParameterName
