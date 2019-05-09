@@ -3,7 +3,6 @@ service: pricecheck
 provider:
   name: aws
   runtime: python3.6
-  memorySize: 128
   timeout: 30
   versionFunctions: false
   region: ap-southeast-1
@@ -12,6 +11,7 @@ provider:
 functions:
   tcgplayer:
     handler: main.tcg_handler
+    memorySize: 256
     environment:
       client_id: ${ssm:tcgplayer_client_id}
       client_secret: ${ssm:tcgplayer_client_secret}
@@ -26,6 +26,7 @@ functions:
             querystring: true
   bigweb:
     handler: main.big_handler
+    memorySize: 512
     layers:
       - arn:aws:lambda:ap-southeast-1:549791063841:layer:mtg-price-layer:2
     events:
