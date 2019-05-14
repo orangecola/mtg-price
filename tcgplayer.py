@@ -16,13 +16,14 @@ def tcgplayer(searchTerm):
 	authorization_header = {"Authorization": ("Bearer " + token["access_token"]), "Content-Type": "application/json"}
 
 	#Get Card IDs
+	searchTerm = urllib.parse.unquote(searchTerm)
 	cardSearchData = {
     "sort": "name",
     "filters": [
         {
             "name": "ProductName",
             "values": [
-                searchTerm
+                urllib.parse.unquote(searchTerm)
             ]
         },
         {

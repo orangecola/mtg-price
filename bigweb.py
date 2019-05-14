@@ -46,8 +46,17 @@ setParity = {
     "MED_RNA":"MED2",
     "pJGP":"JDG",
     "pMPR":"MPRP",
-    "UBT":"UMA:BT"
+    "UBT":"UMA:BT",
+	"WAR_EX":"WAR"
 }
+
+def nameTransformation(setCode, cardName):
+	if setCode == "WAR" and "(JP)" in cardName:
+		cardName = cardName.replace("(JP)", " (JP Alternate Art)")
+	if setCode == "UMA:BT" and "(" in cardName:
+		cardName = cardName.split("(")[0]
+	return cardName
+
 def bigweb(searchTerm):
 	jsonoutput = []
 	f = '{0}:\t{1}'
@@ -69,9 +78,10 @@ def bigweb(searchTerm):
 			try:
 				parsed_json = json.loads(children[i].findChildren(recursive=False)[0]['data-obj'])
 				cardName = parsed_json['name'].replace(u'\u00b4', '\'')
+				cardName = nameTransformation(setCode, cardName)
 			except:
 				cardName = children[i].findChildren()[0].findChildren()[0].text.replace('\\u00b4', '\'')
-				print(cardName)
+				cardName = nameTransformation(setCode, cardName)
 				continue
 			print(cardName)
 			try:
