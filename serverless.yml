@@ -19,11 +19,12 @@ functions:
       - arn:aws:lambda:ap-southeast-1:549791063841:layer:mtg-price-layer:2
     events:
       - http:
-          path: tcgplayer
+          path: tcgplayer/{querystring}
           cors: true
           method: get
-          querystrings:
-            querystring: true
+          request:
+            parameters:
+              querystring: true
   bigweb:
     handler: main.big_handler
     memorySize: 512
@@ -31,11 +32,12 @@ functions:
       - arn:aws:lambda:ap-southeast-1:549791063841:layer:mtg-price-layer:2
     events:
       - http:
-          path: bigweb
+          path: bigweb/{querystring}
           cors: true
           method: get
-          querystrings:
-            querystring: true
+          request:
+            parameters:
+              querystring: true
 resources:
   Resources:
     ServiceEndpointParameter:

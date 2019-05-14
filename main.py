@@ -16,7 +16,7 @@ def formatOutput(output):
 
 def tcg_handler(event, context):
 
-	searchTerm = event['queryStringParameters']['querystring']
+	searchTerm = event['pathParameters']['querystring']
 
 	try:
 		TCGresult = tcgplayer(searchTerm)
@@ -27,7 +27,7 @@ def tcg_handler(event, context):
 	return formatOutput(TCGresult)
 
 def big_handler(event, context):
-	searchTerm = event['queryStringParameters']['querystring']
+	searchTerm = event['pathParameters']['querystring']
 
 	try:
 		BIGresult = bigweb(searchTerm)
