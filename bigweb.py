@@ -50,9 +50,9 @@ setParity = {
 	"WAR_EX":"WAR"
 }
 
-def nameTransformation(setCode, cardName):
-	if setCode == "WAR" and "(JP)" in cardName:
-		cardName = cardName.replace("(JP)", " (JP Alternate Art)")
+def nameTransformation(setCode, setName, cardName):
+	if setCode == "WAR" and "Alterrnate-ART" in setName:
+		cardName = cardName + " (JP Alternate Art)"
 	if setCode == "UMA:BT" and "(" in cardName:
 		cardName = cardName.split("(")[0]
 	return cardName
@@ -78,10 +78,10 @@ def bigweb(searchTerm):
 			try:
 				parsed_json = json.loads(children[i].findChildren(recursive=False)[0]['data-obj'])
 				cardName = parsed_json['name'].replace(u'\u00b4', '\'')
-				cardName = nameTransformation(setCode, cardName)
+				cardName = nameTransformation(setCode, setName, cardName)
 			except:
 				cardName = children[i].findChildren()[0].findChildren()[0].text.replace('\\u00b4', '\'')
-				cardName = nameTransformation(setCode, cardName)
+				cardName = nameTransformation(setCode, setName, cardName)
 				continue
 			print(cardName)
 			try:
