@@ -1,5 +1,6 @@
 from bigweb import bigweb
 from tcgplayer import tcgplayer
+from hareruya import hareruya
 import json
 import traceback
 
@@ -36,3 +37,14 @@ def big_handler(event, context):
 		BIGresult = 0
 
 	return formatOutput(BIGresult)
+
+def har_handler(event, context):
+	searchTerm = event['pathParameters']['querystring']
+
+	try:
+		HARresult = hareruya(searchTerm)
+	except:
+		traceback.print_exc()
+		HARresult = 0
+
+	return formatOutput(HARresult)
