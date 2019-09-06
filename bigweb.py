@@ -99,17 +99,17 @@ def bigweb(searchTerm):
 				print(f.format(condition, price))
 				condition = cardCondition if len(condition) == 0 else condition + "<br />" + cardCondition
 				price = cardPrice if len(price) == 0 else price + "<br />" + cardPrice
-				if len(condition) == 0:
-					continue
-				duplicate = False
-				for k in jsonoutput:
-					if cardName == k[0] and setCode == k[4]:
-						duplicate = True
-						k[2] += "<br />" + condition
-						k[3] += "<br />" + price
-						break
-				if not duplicate:
-					jsonoutput.append([cardName, setName, condition, price, setCode])
+			if len(condition) == 0:
+				continue
+			duplicate = False
+			for k in jsonoutput:
+				if cardName == k[0] and setCode == k[4]:
+					duplicate = True
+					k[2] += "<br />" + condition
+					k[3] += "<br />" + price
+					break
+			if not duplicate:
+				jsonoutput.append([cardName, setName, condition, price, setCode])
 		else:
 			#Display Set Name
 			setName = children[i].findChildren()[0].findChildren()[1].findChildren()[0].text
