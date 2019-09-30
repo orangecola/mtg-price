@@ -6,15 +6,37 @@ provider:
   timeout: 30
   versionFunctions: false
   region: ap-southeast-1
+  environment:
+      client_id: ${ssm:tcgplayer_client_id}
+      client_secret: ${ssm:tcgplayer_client_secret}
+      cache_bucket: ${self:custom.cache-bucket}
   tags:
     Project: pricecheck
+  iamRoleStatements:
+  - Effect: 'Allow'
+    Action:
+      - 's3:ListBucket'
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:aws:s3:::'
+          - ${self:custom.cache-bucket}
+  - Effect: 'Allow'
+    Action:
+      - 's3:PutObject'
+      - 's3:GetObject'
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:aws:s3:::'
+          - ${self:custom.cache-bucket}
+          - '/*'
+custom:
+  cache-bucket: 'pricecheck-cache'
 functions:
   tcgplayer:
     handler: main.tcg_handler
     memorySize: 256
-    environment:
-      client_id: ${ssm:tcgplayer_client_id}
-      client_secret: ${ssm:tcgplayer_client_secret}
     layers:
       - arn:aws:lambda:ap-southeast-1:549791063841:layer:mtg-price-layer:2
     events:

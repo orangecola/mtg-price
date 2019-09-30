@@ -5,25 +5,42 @@ from bs4 import BeautifulSoup
 import sys, json, urllib
 import json
 import os
+import boto3
 
 
 def tcgplayer(searchTerm):
-
-	#Get API Token
-	parameters = {"grant_type": "client_credentials", "client_id":os.environ["client_id"], "client_secret":os.environ["client_secret"]}
-	response = get("https://api.tcgplayer.com/token", data=parameters)
-	token = json.loads(response.content)
+	s3 = boto3.resource('s3').Bucket(os.environ["cache_bucket"])
+	json.load_s3 = lambda f: json.load(s3.Object(key=f).get()["Body"])
+	json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
+	
+	#Check cache for result
+	try:
+		output = json.load_s3("cache-tcgplayer-" + searchTerm)
+		return output
+	except:
+		pass
+	#Check cache for Token
+	try:
+		token = json.load_s3("tcgplayer-key")
+	except:
+		#If no token in cache, get API Token
+		parameters = {"grant_type": "client_credentials", "client_id":os.environ["client_id"], "client_secret":os.environ["client_secret"]}
+		response = get("https://api.tcgplayer.com/token", data=parameters)
+		token = json.loads(response.content)
+		json.dump_s3(token, "tcgplayer-key")
+	
+	
 	authorization_header = {"Authorization": ("Bearer " + token["access_token"]), "Content-Type": "application/json"}
-
+	
 	#Get Card IDs
-	searchTerm = urllib.parse.unquote(searchTerm)
+	searchTerm2 = urllib.parse.unquote(searchTerm)
 	cardSearchData = {
     "sort": "name",
     "filters": [
         {
             "name": "ProductName",
             "values": [
-                urllib.parse.unquote(searchTerm)
+                urllib.parse.unquote(searchTerm2)
             ]
         },
         {
@@ -79,4 +96,5 @@ def tcgplayer(searchTerm):
 					condition = j["subTypeName"] if len(condition) == 0 else condition + "<br />" + j["subTypeName"]
 					price = str(j["marketPrice"]) if len(price) == 0 else price + "<br />" + str(j["marketPrice"])
 		output.append([name, set, condition, price, setCode])
+	json.dump_s3(output, "cache-tcgplayer-" + searchTerm)
 	return output

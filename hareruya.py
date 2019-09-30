@@ -2,8 +2,8 @@ from requests import get
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
-import sys, json, urllib
-import json
+import sys, json, urllib, boto3, os
+
 def simple_get(url):
     """
     Attempts to get the content at `url` by making an HTTP GET request.
@@ -41,6 +41,16 @@ def log_error(e):
     print(e)
 
 def hareruya(searchTerm):
+	s3 = boto3.resource('s3').Bucket(os.environ["cache_bucket"])
+	json.load_s3 = lambda f: json.load(s3.Object(key=f).get()["Body"])
+	json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
+	
+	#Check cache for result
+	try:
+		output = json.load_s3("cache-hareruya-" + searchTerm)
+		return output
+	except:
+		pass
 	jsonoutput = []
 
 	raw_html = simple_get('https://www.hareruyamtg.com/en/products/search?product=' + searchTerm)
@@ -95,4 +105,5 @@ def hareruya(searchTerm):
 		except:
 			continue
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
+	json.dump_s3(jsonoutput, "cache-hareruya-" + searchTerm)
 	return jsonoutput

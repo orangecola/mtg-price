@@ -2,8 +2,8 @@ from requests import get
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup
-import sys, json, urllib
-import json
+import sys, json, urllib, os, boto3
+
 def simple_get(url):
     """
     Attempts to get the content at `url` by making an HTTP GET request.
@@ -58,10 +58,18 @@ def nameTransformation(setCode, setName, cardName):
 	return cardName
 
 def bigweb(searchTerm):
+	s3 = boto3.resource('s3').Bucket(os.environ["cache_bucket"])
+	json.load_s3 = lambda f: json.load(s3.Object(key=f).get()["Body"])
+	json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
+	#Check cache for result
+	try:
+		output = json.load_s3("cache-bigweb-" + searchTerm)
+		return output
+	except:
+		pass
+
 	jsonoutput = []
 	f = '{0}:\t{1}'
-
-	#print('https://mtg.bigweb.co.jp')
 
 	raw_html = simple_get('https://mtg.bigweb.co.jp/cards/filter?big_keyword=' + searchTerm)
 	html = BeautifulSoup(raw_html, 'html.parser')
@@ -120,4 +128,5 @@ def bigweb(searchTerm):
 			print (setCode)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
+	json.dump_s3(jsonoutput, "cache-bigweb-" + searchTerm)
 	return jsonoutput
