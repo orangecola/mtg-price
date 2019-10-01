@@ -47,7 +47,7 @@ def hareruya(searchTerm):
 	
 	#Check cache for result
 	try:
-		output = json.load_s3("cache-hareruya-" + searchTerm)
+		output = json.load_s3("cache/hareruya-" + searchTerm)
 		return output
 	except:
 		pass
@@ -105,5 +105,5 @@ def hareruya(searchTerm):
 		except:
 			continue
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
-	json.dump_s3(jsonoutput, "cache-hareruya-" + searchTerm)
+	json.dump_s3(jsonoutput, "cache/hareruya-" + searchTerm)
 	return jsonoutput

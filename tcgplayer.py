@@ -15,7 +15,7 @@ def tcgplayer(searchTerm):
 	
 	#Check cache for result
 	try:
-		output = json.load_s3("cache-tcgplayer-" + searchTerm)
+		output = json.load_s3("cache/tcgplayer-" + searchTerm)
 		return output
 	except:
 		pass
@@ -96,5 +96,5 @@ def tcgplayer(searchTerm):
 					condition = j["subTypeName"] if len(condition) == 0 else condition + "<br />" + j["subTypeName"]
 					price = str(j["marketPrice"]) if len(price) == 0 else price + "<br />" + str(j["marketPrice"])
 		output.append([name, set, condition, price, setCode])
-	json.dump_s3(output, "cache-tcgplayer-" + searchTerm)
+	json.dump_s3(output, "cache/tcgplayer-" + searchTerm)
 	return output

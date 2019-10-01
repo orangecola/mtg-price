@@ -63,7 +63,7 @@ def bigweb(searchTerm):
 	json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
 	#Check cache for result
 	try:
-		output = json.load_s3("cache-bigweb-" + searchTerm)
+		output = json.load_s3("cache/bigweb-" + searchTerm)
 		return output
 	except:
 		pass
@@ -128,5 +128,5 @@ def bigweb(searchTerm):
 			print (setCode)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
-	json.dump_s3(jsonoutput, "cache-bigweb-" + searchTerm)
+	json.dump_s3(jsonoutput, "cache/bigweb-" + searchTerm)
 	return jsonoutput
