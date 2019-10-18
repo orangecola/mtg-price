@@ -53,7 +53,7 @@ def hareruya(searchTerm):
 		pass
 	jsonoutput = []
 
-	raw_html = simple_get('https://www.hareruyamtg.com/en/products/search?product=' + searchTerm)
+	raw_html = simple_get('https://www.hareruyamtg.com/en/products/search?product=' + searchTerm.replace("%20%2F%2F%20", "+"))
 	html = BeautifulSoup(raw_html, 'html.parser')
 	root = html.find("ul", class_="itemListLine itemListLine--searched")
 	children = root.findChildren(recursive=False)
@@ -65,6 +65,7 @@ def hareruya(searchTerm):
 			alt = children[i].findChildren(recursive=False)[1].text
 			foil = '【Foil】' in alt
 			cardName = alt.split('《')[1].split('》')[0]
+			cardName = cardName.replace("+", " // ")
 			setCode = alt.split('[')[1].split(']')[0]
 			if 'PRE' in setCode:
 				setCode = 'PRE'
