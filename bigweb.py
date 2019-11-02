@@ -1,44 +1,6 @@
-from requests import get
-from requests.exceptions import RequestException
-from contextlib import closing
-from bs4 import BeautifulSoup
-import sys, json, urllib, os, boto3
-
-def simple_get(url):
-    """
-    Attempts to get the content at `url` by making an HTTP GET request.
-    If the content-type of response is some kind of HTML/XML, return the
-    text content, otherwise return None.
-    """
-    try:
-        with closing(get(url, stream=True)) as resp:
-            if is_good_response(resp):
-                return resp.content
-            else:
-                return None
-
-    except RequestException as e:
-        log_error('Error during requests to {0} : {1}'.format(url, str(e)))
-        return None
-
-
-def is_good_response(resp):
-    """
-    Returns True if the response seems to be HTML, False otherwise.
-    """
-    content_type = resp.headers['Content-Type'].lower()
-    return (resp.status_code == 200
-            and content_type is not None
-            and content_type.find('html') > -1)
-
-
-def log_error(e):
-    """
-    It is always a good idea to log errors.
-    This function just prints them, but you can
-    make it do anything.
-    """
-    print(e)
+from puller import *
+from cache import *
+import sys, json, urllib, os
 
 setParity = {
     "pFNM":"FNM",
@@ -57,16 +19,13 @@ def nameTransformation(setCode, setName, cardName):
 		cardName = cardName.split("(")[0]
 	return cardName
 
+cache = True #Filter to enable / disable caching
+
 def bigweb(searchTerm):
-	s3 = boto3.resource('s3').Bucket(os.environ["cache_bucket"])
-	json.load_s3 = lambda f: json.load(s3.Object(key=f).get()["Body"])
-	json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
-	#Check cache for result
-	try:
-		output = json.load_s3("cache/bigweb-" + searchTerm)
-		return output
-	except:
-		pass
+	if cache: #Attempt to get from cache if caching enabled
+		output = getFromCache("cache/bigweb-" + searchTerm)
+		if len(output) > 0:
+			return output
 
 	jsonoutput = []
 	f = '{0}:\t{1}'
@@ -128,5 +87,8 @@ def bigweb(searchTerm):
 			print (setCode)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
-	json.dump_s3(jsonoutput, "cache/bigweb-" + searchTerm)
+	if cache:
+		saveToCache(jsonoutput, "cache/bigweb-" + searchTerm)
 	return jsonoutput
+
+print(bigweb(sys.argv[1]))

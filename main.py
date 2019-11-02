@@ -6,14 +6,14 @@ import traceback
 
 def formatOutput(output):
 	return {
-        "statusCode": 200,
-        "headers": {
-		    "Access-Control-Allow-Origin": "*",
-		    "Access-Control-Allow-Headers": "Content-Type",
-		    "Access-Control-Allow-Methods": "OPTIONS,GET"
-		  },
-        "body": json.dumps(output)
-    }
+		"statusCode": 200,
+		"headers": {
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Headers": "Content-Type",
+			"Access-Control-Allow-Methods": "OPTIONS,GET"
+		},
+		"body": json.dumps(output)
+	}
 
 def tcg_handler(event, context):
 

@@ -1,56 +1,14 @@
-from requests import get
-from requests.exceptions import RequestException
-from contextlib import closing
-from bs4 import BeautifulSoup
+from puller import *
+from cache import *
 import sys, json, urllib, boto3, os
 
-def simple_get(url):
-    """
-    Attempts to get the content at `url` by making an HTTP GET request.
-    If the content-type of response is some kind of HTML/XML, return the
-    text content, otherwise return None.
-    """
-    try:
-        with closing(get(url, stream=True)) as resp:
-            if is_good_response(resp):
-                return resp.content
-            else:
-                return None
-
-    except RequestException as e:
-        log_error('Error during requests to {0} : {1}'.format(url, str(e)))
-        return None
-
-
-def is_good_response(resp):
-    """
-    Returns True if the response seems to be HTML, False otherwise.
-    """
-    content_type = resp.headers['Content-Type'].lower()
-    return (resp.status_code == 200
-            and content_type is not None
-            and content_type.find('html') > -1)
-
-
-def log_error(e):
-    """
-    It is always a good idea to log errors.
-    This function just prints them, but you can
-    make it do anything.
-    """
-    print(e)
+cache = True #Flag to enable caching
 
 def hareruya(searchTerm):
-	s3 = boto3.resource('s3').Bucket(os.environ["cache_bucket"])
-	json.load_s3 = lambda f: json.load(s3.Object(key=f).get()["Body"])
-	json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
-	
-	#Check cache for result
-	try:
-		output = json.load_s3("cache/hareruya-" + searchTerm)
-		return output
-	except:
-		pass
+	if cache: #Attempt to get from cache if caching enabled
+		output = getFromCache("cache/hareruya-" + searchTerm)
+		if len(output) > 0:
+			return output
 	jsonoutput = []
 
 	raw_html = simple_get('https://www.hareruyamtg.com/en/products/search?product=' + searchTerm.replace("%20%2F%2F%20", "+"))
@@ -106,5 +64,8 @@ def hareruya(searchTerm):
 		except:
 			continue
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
-	json.dump_s3(jsonoutput, "cache/hareruya-" + searchTerm)
+	if cache:
+		saveToCache(jsonoutput, "cache/hareruya-" + searchTerm)
 	return jsonoutput
+
+print(hareruya(sys.argv[1]))

@@ -1,3 +1,4 @@
+from cache import *
 from requests import get, post
 from requests.exceptions import RequestException
 from contextlib import closing
@@ -7,27 +8,26 @@ import json
 import os
 import boto3
 
+cache = True #Filter to enable / disable caching
 
 def tcgplayer(searchTerm):
-	s3 = boto3.resource('s3').Bucket(os.environ["cache_bucket"])
-	json.load_s3 = lambda f: json.load(s3.Object(key=f).get()["Body"])
-	json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
+	token = ''
+	if cache: #Attempt to get from cache if caching enabled
+		output = getFromCache("cache/tcgplayer-" + searchTerm)
+		if len(output) > 0:
+			return output
 	
-	#Check cache for result
-	try:
-		output = json.load_s3("cache/tcgplayer-" + searchTerm)
-		return output
-	except:
-		pass
-	#Check cache for Token
-	try:
-		token = json.load_s3("tcgplayer-key")
-	except:
-		#If no token in cache, get API Token
+		#Check cache for Token
+		print("Attempting to get TCGPlayer Key from Cache")
+		token = getFromCache("tcgplayer-key")
+
+	#If no token in cache, get API Token
+	if len(token) == 0:
 		parameters = {"grant_type": "client_credentials", "client_id":os.environ["client_id"], "client_secret":os.environ["client_secret"]}
-		response = get("https://api.tcgplayer.com/token", data=parameters)
-		token = json.loads(response.content)
-		json.dump_s3(token, "tcgplayer-key")
+		response = post("https://api.tcgplayer.com/token", data=parameters)
+		token = json.loads(response.content.decode("utf-8"))
+		if cache:
+			saveToCache(token, "tcgplayer-key")
 	
 	
 	authorization_header = {"Authorization": ("Bearer " + token["access_token"]), "Content-Type": "application/json"}
@@ -53,20 +53,20 @@ def tcgplayer(searchTerm):
     }
 
 	response = post("http://api.tcgplayer.com/v1.19.0/catalog/categories/1/search", headers=authorization_header, data=json.dumps(cardSearchData))
-	searchResult = json.loads(response.content)
+	searchResult = json.loads(response.content.decode("utf-8"))
 
 	cardIds = searchResult["results"]
 	cardIdsStr = ','.join(map(str, cardIds))
 
 	#Get Set Information
 	response = get("http://api.tcgplayer.com/v1.19.0/catalog/products/" + cardIdsStr, headers=authorization_header)
-	cardDetails = json.loads(response.content)
+	cardDetails = json.loads(response.content.decode("utf-8"))
 	cardDetails = cardDetails["results"]
 	cardDetails = sorted(cardDetails, key=lambda k:k["name"])
 
 	#Get Prices
 	response = get("http://api.tcgplayer.com/v1.19.0/pricing/product/" + cardIdsStr, headers=authorization_header)
-	prices = json.loads(response.content)
+	prices = json.loads(response.content.decode("utf-8"))
 	prices = prices["results"]
 
 	groups=[]
@@ -77,7 +77,7 @@ def tcgplayer(searchTerm):
 
 	#Get Group Ids
 	response = get("http://api.tcgplayer.com/v1.19.0/catalog/groups/" + groupIdsStr, headers=authorization_header)
-	groups = json.loads(response.content)
+	groups = json.loads(response.content.decode("utf-8"))
 	groups = groups["results"]
 
 	output = []
@@ -96,5 +96,8 @@ def tcgplayer(searchTerm):
 					condition = j["subTypeName"] if len(condition) == 0 else condition + "<br />" + j["subTypeName"]
 					price = str(j["marketPrice"]) if len(price) == 0 else price + "<br />" + str(j["marketPrice"])
 		output.append([name, set, condition, price, setCode])
-	json.dump_s3(output, "cache/tcgplayer-" + searchTerm)
+	if cache:
+		saveToCache(output, "cache/tcgplayer-" + searchTerm)
 	return output
+
+print(tcgplayer(sys.argv[1]))
