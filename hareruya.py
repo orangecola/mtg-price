@@ -68,4 +68,4 @@ def hareruya(searchTerm):
 		saveToCache(jsonoutput, "cache/hareruya-" + searchTerm)
 	return jsonoutput
 
-print(hareruya(sys.argv[1]))
+#print(hareruya(sys.argv[1]))

@@ -100,4 +100,4 @@ def tcgplayer(searchTerm):
 		saveToCache(output, "cache/tcgplayer-" + searchTerm)
 	return output
 
-print(tcgplayer(sys.argv[1]))
+#print(tcgplayer(sys.argv[1]))
