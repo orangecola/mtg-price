@@ -1,3 +1,3 @@
-*/*
-*.zip
-!/code/
+.serverless
+__pycache__
+tests/config.py
