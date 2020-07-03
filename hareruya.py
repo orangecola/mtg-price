@@ -1,6 +1,7 @@
 from puller import *
 from cache import *
 import sys, json, urllib, boto3, os
+import traceback
 
 cache = True #Flag to enable caching
 
@@ -35,21 +36,20 @@ def hareruya(searchTerm):
 			print(cardName)
 			print(setCode)
 			print(lang)
-			prices = children[i].findChildren(recursive=False)[2].findChildren(recursive=False)
+			prices = children[i].findChildren(recursive=False)[1].findChildren(recursive=False)
 			#print(prices)
 			for j in range(1, len(prices)):
 				row = prices[j]
-				stock = int(row.findChildren(recursive=False)[2].text)
-				if stock > 0:
-					cardCondition = row.findChildren(recursive=False)[0].findChildren(recursive=False)[0].text.strip()
-					cardPrice = row.findChildren(recursive=False)[1].text.split( )[0] + '円'
-					cardCondition = '[' + lang + ':' + cardCondition + ']'
-					if foil:
-						cardCondition += 'Foil'
-					print(cardCondition)
-					print(cardPrice)
-					condition = cardCondition if len(condition) == 0 else condition + "<br />" + cardCondition
-					price = cardPrice if len(price) == 0 else price + "<br />" + cardPrice
+				
+				cardPrice = row.findChildren(recursive=False)[0].text.split()[1] + '円'
+				cardCondition =  row.findChildren(recursive=False)[1].text.strip().split()[0][1:]
+				cardCondition = '[' + lang + ':' + cardCondition + ']'
+				if foil:
+					cardCondition += 'Foil'
+				print(cardCondition)
+				print(cardPrice)
+				condition = cardCondition if len(condition) == 0 else condition + "<br />" + cardCondition
+				price = cardPrice if len(price) == 0 else price + "<br />" + cardPrice
 			if len(condition) == 0:
 				continue
 			duplicate = False
@@ -61,11 +61,14 @@ def hareruya(searchTerm):
 					break
 			if not duplicate:
 				jsonoutput.append([cardName, "", condition, price, setCode])
-		except:
-			continue
+		except Exception as e:
+			track = traceback.format_exc()
+			print(track)
+
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
 	if cache:
 		saveToCache(jsonoutput, "cache/hareruya-" + searchTerm)
 	return jsonoutput
 
-#print(hareruya(sys.argv[1]))
+if __name__ == '__main__':
+	print(hareruya(sys.argv[1]))

@@ -90,4 +90,5 @@ def bigweb(searchTerm):
 		saveToCache(jsonoutput, "cache/bigweb-" + searchTerm)
 	return jsonoutput
 
-#print(bigweb(sys.argv[1]))
+if __name__ == '__main__':
+	print(bigweb(sys.argv[1]))

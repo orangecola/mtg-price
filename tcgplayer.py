@@ -99,4 +99,5 @@ def tcgplayer(searchTerm):
 		saveToCache(output, "cache/tcgplayer-" + searchTerm)
 	return output
 
-#print(tcgplayer(sys.argv[1]))
+if __name__ == '__main__':
+	print(tcgplayer(sys.argv[1]))
