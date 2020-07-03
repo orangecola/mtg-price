@@ -1,5 +1,8 @@
 service: pricecheck
 
+package:
+  exclude:
+      - '*/**'
 provider:
   name: aws
   runtime: python3.6
@@ -10,6 +13,7 @@ provider:
       client_id: ${ssm:tcgplayer_client_id}
       client_secret: ${ssm:tcgplayer_client_secret}
       cache_bucket: ${self:custom.cache-bucket}
+      cache: true
   tags:
     Project: pricecheck
   iamRoleStatements:

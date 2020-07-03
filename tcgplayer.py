@@ -52,20 +52,19 @@ def tcgplayer(searchTerm):
     ]
     }
 
-	response = post("http://api.tcgplayer.com/v1.19.0/catalog/categories/1/search", headers=authorization_header, data=json.dumps(cardSearchData))
+	response = post("https://api.tcgplayer.com/v1.19.0/catalog/categories/1/search", headers=authorization_header, data=json.dumps(cardSearchData))
 	searchResult = json.loads(response.content.decode("utf-8"))
-
 	cardIds = searchResult["results"]
 	cardIdsStr = ','.join(map(str, cardIds))
 
 	#Get Set Information
-	response = get("http://api.tcgplayer.com/v1.19.0/catalog/products/" + cardIdsStr, headers=authorization_header)
+	response = get("https://api.tcgplayer.com/v1.19.0/catalog/products/" + cardIdsStr, headers=authorization_header)
 	cardDetails = json.loads(response.content.decode("utf-8"))
 	cardDetails = cardDetails["results"]
 	cardDetails = sorted(cardDetails, key=lambda k:k["name"])
 
 	#Get Prices
-	response = get("http://api.tcgplayer.com/v1.19.0/pricing/product/" + cardIdsStr, headers=authorization_header)
+	response = get("https://api.tcgplayer.com/v1.19.0/pricing/product/" + cardIdsStr, headers=authorization_header)
 	prices = json.loads(response.content.decode("utf-8"))
 	prices = prices["results"]
 
@@ -76,7 +75,7 @@ def tcgplayer(searchTerm):
 	groupIdsStr = ','.join(map(str, groups))
 
 	#Get Group Ids
-	response = get("http://api.tcgplayer.com/v1.19.0/catalog/groups/" + groupIdsStr, headers=authorization_header)
+	response = get("https://api.tcgplayer.com/v1.19.0/catalog/groups/" + groupIdsStr, headers=authorization_header)
 	groups = json.loads(response.content.decode("utf-8"))
 	groups = groups["results"]
 

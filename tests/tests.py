@@ -7,11 +7,12 @@ class Test_Bigweb(unittest.TestCase):
 
     def test_withCache(self):
         pass
-
+    
+    def test_similarName(self):
+        pass
     def test_nameTransformation(self):
         self.assertEqual(1, 1)
-    
-    def test_errorHandling(self):
+        self.assertEqual(1,2)
         pass
 
     def test_Combination(self):
