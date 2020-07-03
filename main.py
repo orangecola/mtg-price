@@ -15,36 +15,23 @@ def formatOutput(output):
 		"body": json.dumps(output)
 	}
 
-def tcg_handler(event, context):
-
+def runFunction(function, event):
+	print("Function started with input:", event)
 	searchTerm = event['pathParameters']['querystring']
-
 	try:
-		TCGresult = tcgplayer(searchTerm)
+		result = function(searchTerm)
+		print("Function completed with output:",result)
 	except:
+		print("Function halted with exception:")
 		traceback.print_exc()
-		TCGresult = 0
+		result = 0
+	return formatOutput(result)
 
-	return formatOutput(TCGresult)
+def tcg_handler(event, context):
+	return runFunction(tcgplayer, event)
 
 def big_handler(event, context):
-	searchTerm = event['pathParameters']['querystring']
-
-	try:
-		BIGresult = bigweb(searchTerm)
-	except:
-		traceback.print_exc()
-		BIGresult = 0
-
-	return formatOutput(BIGresult)
+	return runFunction(bigweb, event)
 
 def har_handler(event, context):
-	searchTerm = event['pathParameters']['querystring']
-
-	try:
-		HARresult = hareruya(searchTerm)
-	except:
-		traceback.print_exc()
-		HARresult = 0
-
-	return formatOutput(HARresult)
+	return runFunction(hareruya, event)
