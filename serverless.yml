@@ -13,7 +13,7 @@ provider:
       client_id: ${ssm:tcgplayer_client_id}
       client_secret: ${ssm:tcgplayer_client_secret}
       cache_bucket: ${self:custom.cache-bucket}
-      cache: true
+      cache: "True"
   tags:
     Project: pricecheck
   iamRoleStatements:

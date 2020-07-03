@@ -1,19 +1,36 @@
 import unittest
 import config
 import os
+import boto3
+import bigweb
+
 class Test_Bigweb(unittest.TestCase):
+    def test_basicTest(self):
+        result = bigweb.bigweb("Yuriko, the Tiger's Shadow")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 3)
+        [self.assertEqual(len(i), 5) for i in result]
+
     def test_withoutCache(self):
+        os.environ["cache"] = "False"
+        result = bigweb.bigweb("Yuriko, the Tiger's Shadow")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 3)
+        [self.assertEqual(len(i), 5) for i in result]
         pass
 
     def test_withCache(self):
+        os.environ["cache"] = "True"
+        result = bigweb.bigweb("Yuriko, the Tiger's Shadow")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 3)
+        [self.assertEqual(len(i), 5) for i in result]
         pass
     
     def test_similarName(self):
         pass
     def test_nameTransformation(self):
-        self.assertEqual(1, 1)
-        self.assertEqual(1,2)
-        pass
-
-    def test_Combination(self):
         pass

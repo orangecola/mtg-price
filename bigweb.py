@@ -19,9 +19,8 @@ def nameTransformation(setCode, setName, cardName):
 		cardName = cardName.split("(")[0]
 	return cardName
 
-cache = True #Filter to enable / disable caching
-
 def bigweb(searchTerm):
+	cache = os.getenv("cache") == 'True' #Filter to enable / disable caching
 	if cache: #Attempt to get from cache if caching enabled
 		output = getFromCache("cache/bigweb-" + searchTerm)
 		if len(output) > 0:
