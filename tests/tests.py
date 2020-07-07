@@ -2,7 +2,7 @@ import unittest
 import config
 import os
 import boto3
-import bigweb
+import bigweb, tcgplayer, hareruya
 
 class Test_Bigweb(unittest.TestCase):
     def test_basicTest(self):
@@ -34,3 +34,19 @@ class Test_Bigweb(unittest.TestCase):
         pass
     def test_nameTransformation(self):
         pass
+
+class Test_tcgplayer(unittest.TestCase):
+    def test_basicTest(self):
+        result = tcgplayer.tcgplayer("Yuriko, the Tiger's Shadow")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 3)
+        [self.assertEqual(len(i), 5) for i in result]
+
+class Test_hareruya(unittest.TestCase):
+    def test_basicTest(self):
+        result = hareruya.hareruya("Yuriko, the Tiger's Shadow")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 3)
+        [self.assertEqual(len(i), 5) for i in result]
