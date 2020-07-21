@@ -2,7 +2,7 @@ import unittest
 import config
 import os
 import boto3
-import bigweb, tcgplayer, hareruya
+import bigweb, tcgplayer, hareruya, cardkingdom
 
 class Test_Bigweb(unittest.TestCase):
     def test_basicTest(self):
@@ -50,3 +50,28 @@ class Test_hareruya(unittest.TestCase):
         #Check if all entries are returned
         self.assertEqual(len(result), 3)
         [self.assertEqual(len(i), 5) for i in result]
+
+class Test_cardkingdom(unittest.TestCase):
+    def test_basicTest(self):
+        os.environ["cache"] = "False"
+        result = cardkingdom.cardkingdom("Yuriko, the Tiger's Shadow")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 3)
+        [self.assertEqual(len(i), 5) for i in result]
+    def test_foilTest(self):
+        os.environ["cache"] = "False"
+        result = cardkingdom.cardkingdom("Avacyn, Angel of Hope")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 6)
+        [self.assertEqual(len(i), 5) for i in result]
+    def test_cacheTest(self):
+        s3 = boto3.resource('s3')
+        bucket = s3.Bucket(os.environ["cache_bucket"])
+        bucket.objects.filter(Prefix="cache/").delete()
+        self.assertEqual(sum(1 for _ in bucket.objects.filter(Prefix="cache/")), 0)
+        os.environ["cache"] = "True"
+        result = cardkingdom.cardkingdom("Avacyn, Angel of Hope")
+        self.assertGreater(sum(1 for _ in bucket.objects.filter(Prefix="cache/")), 0)
+        result = cardkingdom.cardkingdom("Avacyn, Angel of Hope")
