@@ -1,6 +1,7 @@
 from bigweb import bigweb
 from tcgplayer import tcgplayer
 from hareruya import hareruya
+from cardkingdom import cardkingdom
 import json
 import traceback
 
@@ -35,3 +36,6 @@ def big_handler(event, context):
 
 def har_handler(event, context):
 	return runFunction(hareruya, event)
+
+def car_handler(event, context):
+	return runFunction(cardkingdom, event)

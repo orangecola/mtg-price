@@ -77,6 +77,19 @@ functions:
           request:
             parameters:
               querystring: true
+  cardkingdom:
+    handler: main.car_handler
+    memorySize: 512
+    layers:
+      - arn:aws:lambda:ap-southeast-1:549791063841:layer:mtg-price-layer:2
+    events:
+      - http:
+          path: cardkingdom/{querystring}
+          cors: true
+          method: get
+          request:
+            parameters:
+              querystring: true
 resources:
   Resources:
     ServiceEndpointParameter:
