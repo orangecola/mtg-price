@@ -36,6 +36,7 @@ def tcgplayer(searchTerm):
 	searchTerm2 = urllib.parse.unquote(searchTerm)
 	cardSearchData = {
     "sort": "name",
+	"offset": 0,
     "filters": [
         {
             "name": "ProductName",
@@ -51,12 +52,18 @@ def tcgplayer(searchTerm):
         }
     ]
     }
-
-	response = post("https://api.tcgplayer.com/v1.19.0/catalog/categories/1/search", headers=authorization_header, data=json.dumps(cardSearchData))
-	searchResult = json.loads(response.content.decode("utf-8"))
-	cardIds = searchResult["results"]
+	cardIds=[]
+	offset = 0
+	while True:
+		response = post("https://api.tcgplayer.com/v1.19.0/catalog/categories/1/search", headers=authorization_header, data=json.dumps(cardSearchData))
+		searchResult = json.loads(response.content.decode("utf-8"))
+		cardIds += searchResult["results"]
+		totalItems = searchResult["totalItems"]
+		offset += 10
+		if offset > totalItems:
+			break 
+		cardSearchData["offset"] = offset
 	cardIdsStr = ','.join(map(str, cardIds))
-
 	#Get Set Information
 	response = get("https://api.tcgplayer.com/v1.19.0/catalog/products/" + cardIdsStr, headers=authorization_header)
 	cardDetails = json.loads(response.content.decode("utf-8"))

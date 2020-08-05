@@ -44,6 +44,12 @@ class Test_tcgplayer(unittest.TestCase):
         #Check if all entries are returned
         self.assertEqual(len(result), 3)
         [self.assertEqual(len(i), 5) for i in result]
+    def test_pagination(self):
+        result = tcgplayer.tcgplayer("Cultivate")
+        print(result)
+        #Check if all entries are returned
+        self.assertEqual(len(result), 17)
+        [self.assertEqual(len(i), 5) for i in result]
 
 class Test_hareruya(unittest.TestCase):
     def test_basicTest(self):
