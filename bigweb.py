@@ -1,5 +1,5 @@
 from puller import *
-from cache import *
+
 import sys, json, urllib, os
 
 setParity = {
@@ -22,6 +22,7 @@ def nameTransformation(setCode, setName, cardName):
 def bigweb(searchTerm):
 	cache = os.getenv("cache") == 'True' #Filter to enable / disable caching
 	if cache: #Attempt to get from cache if caching enabled
+		from cache import saveToCache, getFromCache
 		output = getFromCache("cache/bigweb-" + searchTerm)
 		if len(output) > 0:
 			return output
@@ -52,7 +53,7 @@ def bigweb(searchTerm):
 			print(cardName)
 			try:
 				#Display Card Prices
-				pricelist = children[i].findChildren(recursive=False)[0].findChildren(recursive=False)[3].findChildren(recursive=False)[2].findChildren(recursive=False)[0].findChildren(recursive=False)
+				pricelist = children[i].find("div", class_="card-img-box-caption-up ").findChildren(recursive=False)[0]
 			except:
 				#Sold Out
 				jsonoutput.append([cardName, setName, 'Sold out', '0円', setCode])

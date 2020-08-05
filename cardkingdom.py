@@ -1,7 +1,18 @@
 from puller import *
-from cache import *
 import sys, json, urllib, boto3, os
 import traceback
+
+setParity = {
+    "Mystery Booster":"Mystery Booster Cards"
+}
+
+def nameSetTransformation(card):
+	if card[1] in setParity:
+		card[1] = setParity[card[1]]
+	if "Judge Foil" in card[0]:
+		card[0] = "Yuriko, the Tiger's Shadow"
+		card[1] = "Judge Promos"
+	return card
 
 def getArray(url):
 	jsonoutput = []
@@ -37,8 +48,9 @@ def getArray(url):
 	return jsonoutput
 
 def cardkingdom(searchTerm):
-	cache = os.getenv("cache") == 'True'
+	cache = os.getenv("cache") == 'True' #Filter to enable / disable caching
 	if cache: #Attempt to get from cache if caching enabled
+		from cache import saveToCache, getFromCache
 		output = getFromCache("cache/cardkingdom-" + searchTerm)
 		if len(output) > 0:
 			return output
@@ -67,6 +79,8 @@ def cardkingdom(searchTerm):
 			combined[index][3] = combined[index][3] + "<br />" + item[3]
 	if cache:
 		saveToCache(combined, "cache/cardkingdom-" + searchTerm)
+	for i in combined:
+		i = nameSetTransformation(i)
 	return combined
 	
 if __name__ == '__main__':

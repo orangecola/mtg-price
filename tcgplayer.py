@@ -1,4 +1,3 @@
-from cache import *
 from requests import get, post
 from requests.exceptions import RequestException
 from contextlib import closing
@@ -8,11 +7,12 @@ import json
 import os
 import boto3
 
-cache = True #Filter to enable / disable caching
 
 def tcgplayer(searchTerm):
 	token = ''
+	cache = os.getenv("cache") == 'True' #Filter to enable / disable caching
 	if cache: #Attempt to get from cache if caching enabled
+		from cache import saveToCache, getFromCache
 		output = getFromCache("cache/tcgplayer-" + searchTerm)
 		if len(output) > 0:
 			return output

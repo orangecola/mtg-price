@@ -1,12 +1,16 @@
 from puller import *
-from cache import *
 import sys, json, urllib, boto3, os
 import traceback
 
-cache = True #Flag to enable caching
+setParity = {
+    "Judge Foil":"JDG"
+}
+
 
 def hareruya(searchTerm):
+	cache = os.getenv("cache") == 'True' #Filter to enable / disable caching
 	if cache: #Attempt to get from cache if caching enabled
+		from cache import saveToCache, getFromCache
 		output = getFromCache("cache/hareruya-" + searchTerm)
 		if len(output) > 0:
 			return output
@@ -66,6 +70,9 @@ def hareruya(searchTerm):
 			print(track)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
+	for i in jsonoutput:
+		if i[4] in setParity:
+			i[4] = setParity[i[4]]
 	if cache:
 		saveToCache(jsonoutput, "cache/hareruya-" + searchTerm)
 	return jsonoutput
