@@ -77,10 +77,10 @@ def cardkingdom(searchTerm):
 		else:
 			combined[index][2] = combined[index][2] + "<br />" + item[2]
 			combined[index][3] = combined[index][3] + "<br />" + item[3]
-	if cache:
-		saveToCache(combined, "cache/cardkingdom-" + searchTerm)
 	for i in combined:
 		i = nameSetTransformation(i)
+	if cache:
+		saveToCache(combined, "cache/cardkingdom-" + searchTerm)
 	return combined
 	
 if __name__ == '__main__':
