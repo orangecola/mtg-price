@@ -1,12 +1,8 @@
-from requests import get, post
-from requests.exceptions import RequestException
-from contextlib import closing
-from bs4 import BeautifulSoup
+from puller import *
 import sys, json, urllib
 import json
 import os
 import boto3
-
 
 def tcgplayer(searchTerm):
 	token = ''
@@ -18,7 +14,7 @@ def tcgplayer(searchTerm):
 			return output
 	
 		#Check cache for Token
-		print("Attempting to get TCGPlayer Key from Cache")
+		logging.info("Attempting to get TCGPlayer Key from Cache")
 		token = getFromCache("tcgplayer-key")
 
 	#If no token in cache, get API Token
@@ -107,4 +103,4 @@ def tcgplayer(searchTerm):
 	return output
 
 if __name__ == '__main__':
-	print(tcgplayer(sys.argv[1]))
+	logging.info(tcgplayer(sys.argv[1]))

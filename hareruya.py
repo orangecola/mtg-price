@@ -3,7 +3,11 @@ import sys, json, urllib, boto3, os
 import traceback
 
 setParity = {
-    "Judge Foil":"JDG"
+    "Judge Foil":"JDG",
+	"ZvE":"DDP",
+	"FtV:Transform":"V17",
+	"FtV:Angels":"V15",
+	"The List":"TLP"
 }
 
 
@@ -37,11 +41,11 @@ def hareruya(searchTerm):
 				lang = '英'
 			elif lang == 'JP':
 				lang = '日'
-			print(cardName)
-			print(setCode)
-			print(lang)
+			logging.info(cardName)
+			logging.info(setCode)
+			logging.info(lang)
 			prices = children[i].findChildren(recursive=False)[1].findChildren(recursive=False)
-			#print(prices)
+			#logging.info(prices)
 			for j in range(1, len(prices)):
 				row = prices[j]
 				
@@ -50,8 +54,8 @@ def hareruya(searchTerm):
 				cardCondition = '[' + lang + ':' + cardCondition + ']'
 				if foil:
 					cardCondition += 'Foil'
-				print(cardCondition)
-				print(cardPrice)
+				logging.info(cardCondition)
+				logging.info(cardPrice)
 				condition = cardCondition if len(condition) == 0 else condition + "<br />" + cardCondition
 				price = cardPrice if len(price) == 0 else price + "<br />" + cardPrice
 			if len(condition) == 0:
@@ -67,7 +71,7 @@ def hareruya(searchTerm):
 				jsonoutput.append([cardName, "", condition, price, setCode])
 		except Exception as e:
 			track = traceback.format_exc()
-			print(track)
+			logging.info(track)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
 	for i in jsonoutput:
@@ -78,4 +82,4 @@ def hareruya(searchTerm):
 	return jsonoutput
 
 if __name__ == '__main__':
-	print(hareruya(sys.argv[1]))
+	logging.info(hareruya(sys.argv[1]))

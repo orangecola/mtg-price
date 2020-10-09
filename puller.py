@@ -1,7 +1,11 @@
-from requests import get
+from requests import get,post
 from requests.exceptions import RequestException
 from contextlib import closing
+import logging
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 #pylint:disable=E1101
 def simple_get(url):
     """

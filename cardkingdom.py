@@ -3,15 +3,23 @@ import sys, json, urllib, boto3, os
 import traceback
 
 setParity = {
-    "Mystery Booster":"Mystery Booster Cards"
+    "Mystery Booster/The List":"Mystery Booster Cards",
+	"Duel Decks: Zendikar Vs. Eldrazi":"Duel Decks: Zendikar vs. Eldrazi",
+	"Shadows Over Innistrad":"Shadows over Innistrad"
 }
 
 def nameSetTransformation(card):
 	if card[1] in setParity:
 		card[1] = setParity[card[1]]
 	if "Judge Foil" in card[0]:
-		card[0] = "Yuriko, the Tiger's Shadow"
+		card[0] = card[0].split(" (Judge Foil)")[0]
 		card[1] = "Judge Promos"
+	if "Prerelease Foil" in card[0]:
+		card[0] = card[0].split(" (Prerelease Foil)")[0]
+		card[1] = "Prerelease Cards"
+	if "Double Masters Box Toppers" in card[1]:
+		card[0] = card[0] + " (Borderless)"
+		card[1] = "Double Masters"
 	return card
 
 def getArray(url):
@@ -27,7 +35,7 @@ def getArray(url):
 		title = child.find("span", class_="productDetailTitle").findChildren()[0].text
 		cardSet = child.find("div", class_="productDetailSet").findChildren()[0].text.split("(")[0][:-1]
 		prices = child.findAll("li", class_="itemAddToCart")
-		print(title, cardSet)
+		logging.info(title + ' ' + cardSet)
 		conditionsResult = ""
 		priceResult = ""
 		for price in prices:
@@ -37,7 +45,7 @@ def getArray(url):
 			if foil:
 				condition += " Foil"		
 			if int(stock) > 0 :
-				print(condition, stylePrice)
+				logging.info(condition + ' ' + stylePrice)
 				conditionsResult = condition if len(conditionsResult) == 0 else conditionsResult + "<br />" + condition
 				priceResult = stylePrice if len(priceResult) == 0 else priceResult + "<br />" + stylePrice
 			
@@ -58,10 +66,10 @@ def cardkingdom(searchTerm):
 	url = 'https://www.cardkingdom.com/catalog/search?filter%5Bipp%5D=60&filter%5Bsort%5D=name&filter%5Bname%5D='
 	nonFoil = getArray(url + searchTerm)
 	foil = getArray(url + searchTerm + '&filter[tab]=mtg_foil') 
-	print("nonFoil")
-	print(nonFoil)
-	print("Foil")
-	print(foil)
+	logging.info("nonFoil")
+	logging.info(nonFoil)
+	logging.info("Foil")
+	logging.info(foil)
 	combined = nonFoil
 	for item in foil:
 		if 'Sold Out' == item[2]:
@@ -84,4 +92,4 @@ def cardkingdom(searchTerm):
 	return combined
 	
 if __name__ == '__main__':
-	print(cardkingdom(sys.argv[1]))
+	logging.info(cardkingdom(sys.argv[1]))

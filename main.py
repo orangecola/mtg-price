@@ -3,7 +3,11 @@ from tcgplayer import tcgplayer
 from hareruya import hareruya
 from cardkingdom import cardkingdom
 import json
+import sys
+import logging
 import traceback
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def formatOutput(output):
 	return {
@@ -17,14 +21,22 @@ def formatOutput(output):
 	}
 
 def runFunction(function, event):
-	print("Function started with input:", event)
+	logging.info("Function started with input:")
+	logging.info(event)
 	searchTerm = event['pathParameters']['querystring']
 	try:
 		result = function(searchTerm)
-		print("Function completed with output:",result)
+		logging.info("Function completed with output:")
+		logging.info(result)
 	except:
-		print("Function halted with exception:")
-		traceback.print_exc()
+		exception_type, exception_value, exception_traceback = sys.exc_info()
+		traceback_string = traceback.format_exception(exception_type, exception_value, exception_traceback)
+		err_msg = json.dumps({
+			"errorType": exception_type.__name__,
+			"errorMessage": str(exception_value),
+			"stackTrace": traceback_string
+		})
+		logging.error(err_msg)
 		result = 0
 	return formatOutput(result)
 

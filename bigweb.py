@@ -9,7 +9,8 @@ setParity = {
     "pJGP":"JDG",
     "pMPR":"MPRP",
     "UBT":"UMA:BT",
-	"WAR_EX":"WAR"
+	"WAR_EX":"WAR",
+	"pPRE":"PRE"
 }
 
 def nameTransformation(setCode, setName, cardName):
@@ -50,20 +51,20 @@ def bigweb(searchTerm):
 				cardName = children[i].findChildren()[0].findChildren()[0].text.replace('\\u00b4', '\'')
 				cardName = nameTransformation(setCode, setName, cardName)
 				continue
-			print(cardName)
+			logging.info(cardName)
 			try:
 				#Display Card Prices
 				pricelist = children[i].find("div", class_="card-img-box-caption-up ").findChildren(recursive=False)[0]
 			except:
 				#Sold Out
 				jsonoutput.append([cardName, setName, 'Sold out', '0円', setCode])
-				print(f.format('Sold out', '0円'))
+				logging.info(f.format('Sold out', '0円'))
 				continue
 			pricelist = pricelist[:-1]
 			for i in pricelist:
 				cardCondition = i.findChildren(recursive=False)[0].findChildren(recursive=False)[0].text
 				cardPrice = i.findChildren(recursive=False)[0].findChildren(recursive=False)[1].text
-				print(f.format(condition, price))
+				logging.info(f.format(condition, price))
 				condition = cardCondition if len(condition) == 0 else condition + "<br />" + cardCondition
 				price = cardPrice if len(price) == 0 else price + "<br />" + cardPrice
 			if len(condition) == 0:
@@ -83,8 +84,8 @@ def bigweb(searchTerm):
 			setCode = children[i].findChildren()[0].findChildren()[1].text.split(':')[0]
 			if setCode in setParity:
 				setCode = setParity[setCode]
-			print (setName)
-			print (setCode)
+			logging.info (setName)
+			logging.info (setCode)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
 	if cache:
@@ -92,4 +93,4 @@ def bigweb(searchTerm):
 	return jsonoutput
 
 if __name__ == '__main__':
-	print(bigweb(sys.argv[1]))
+	logging.info(bigweb(sys.argv[1]))
