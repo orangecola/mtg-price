@@ -13,12 +13,12 @@ setParity = {
 	"pPRE":"PRE"
 }
 
-def nameTransformation(setCode, setName, cardName):
-	if setCode == "WAR" and "Alterrnate-ART" in setName:
-		cardName = cardName + " (JP Alternate Art)"
-	if setCode == "UMA:BT" and "(" in cardName:
-		cardName = cardName.split("(")[0]
-	return cardName
+def nameSetTransformation(card):
+	if card[4] in setParity:
+		card[4] = setParity[card[4]]
+	if card[4] == "WAR" and "Alterrnate-ART" in card[1]:
+		card[0] = card[0] + " (JP Alternate Art)"
+	return card
 
 def bigweb(searchTerm):
 	cache = os.getenv("cache") == 'True' #Filter to enable / disable caching
@@ -46,10 +46,8 @@ def bigweb(searchTerm):
 			try:
 				parsed_json = json.loads(children[i].findChildren(recursive=False)[0]['data-obj'])
 				cardName = parsed_json['name'].replace(u'\u00b4', '\'')
-				cardName = nameTransformation(setCode, setName, cardName)
 			except:
 				cardName = children[i].findChildren()[0].findChildren()[0].text.replace('\\u00b4', '\'')
-				cardName = nameTransformation(setCode, setName, cardName)
 				continue
 			logging.info(cardName)
 			try:
@@ -82,12 +80,12 @@ def bigweb(searchTerm):
 			#Display Set Name
 			setName = children[i].findChildren()[0].findChildren()[1].findChildren()[0].text
 			setCode = children[i].findChildren()[0].findChildren()[1].text.split(':')[0]
-			if setCode in setParity:
-				setCode = setParity[setCode]
 			logging.info (setName)
 			logging.info (setCode)
 
 	jsonoutput = sorted(jsonoutput, key=lambda k:k[0])
+	for i in jsonoutput:
+		i = nameSetTransformation(i)
 	if cache:
 		saveToCache(jsonoutput, "cache/bigweb-" + searchTerm)
 	return jsonoutput

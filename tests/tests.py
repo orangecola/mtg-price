@@ -19,7 +19,6 @@ class Test_Bigweb(unittest.TestCase):
         #Check if all entries are returned
         self.assertEqual(len(result), 3)
         [self.assertEqual(len(i), 5) for i in result]
-        pass
 
     def test_withCache(self):
         s3 = boto3.resource('s3')
@@ -29,13 +28,21 @@ class Test_Bigweb(unittest.TestCase):
         os.environ["cache"] = "True"
         result = bigweb.bigweb("Avacyn, Angel of Hope")
         self.assertGreater(sum(1 for _ in bucket.objects.filter(Prefix="cache/")), 0)
-        result = bigweb.bigweb("Avacyn, Angel of Hope")
-        pass
     
-    def test_similarName(self):
-        pass
-    def test_nameTransformation(self):
-        pass
+    def test_nameTransformation_war(self):
+        os.environ["cache"] = "False"
+        result = bigweb.bigweb("Nissa, Who Shakes the World")
+        print(result)
+        names = [i[0] for i in result]
+        self.assertTrue("Nissa, Who Shakes the World (JP Alternate Art)" in names)
+
+    def test_setTransformation(self):
+        os.environ["cache"] = "False"
+        result = bigweb.bigweb("Yuriko, the Tiger's Shadow")
+        print(result)
+        set_codes = [i[4] for i in result]
+        self.assertTrue("JDG" in set_codes)
+        
 
 class Test_tcgplayer(unittest.TestCase):
     def test_basicTest(self):
